@@ -1,2 +1,8 @@
 *.pyc
 data/
+venv
+cs285.egg*
+dist
+build
+content
+.vscode
