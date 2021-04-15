@@ -78,7 +78,7 @@ class ReplayBuffer(object):
         ## HINT 2: return corresponding data points from each array (i.e., not different indices from each array)
         ## HINT 3: look at the sample_recent_data function below
 
-        p = numpy.random.permutation(self.obs.shape[0])
+        p = np.random.permutation(self.obs.shape[0])
         return (
             self.obs[p], 
             self.acs[p], 

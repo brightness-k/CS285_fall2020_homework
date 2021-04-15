@@ -50,7 +50,7 @@ def build_mlp(
     layers = []
     layers.append(nn.Linear(input_size,size))
     layers.append(activation)
-    for _ in range(n_layers) :
+    for _ in range(n_layers-2) :
         layers.append(nn.Linear(size,size))
         layers.append(activation)
     layers.append(nn.Linear(size,output_size))

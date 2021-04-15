@@ -9,6 +9,7 @@ import torch
 from cs285.infrastructure import pytorch_util as ptu
 from cs285.infrastructure.logger import Logger
 from cs285.infrastructure import utils
+import pickle
 
 # how many rollouts to save as videos to tensorboard
 MAX_NVIDEO = 2
@@ -170,7 +171,7 @@ class RL_Trainer(object):
         print("\nCollecting data to be used for training...")
         if itr == 0:
             with open(load_initial_expertdata, 'rb') as fp:
-                loaded = pickle.load(paths_file)
+                loaded = pickle.load(fp)
             paths, envsteps_this_batch = loaded, 0
         else:
             paths = utils.sample_n_trajectories(self.env, collect_policy, batch_size // MAX_NVIDEO, MAX_VIDEO_LEN)
@@ -210,7 +211,9 @@ class RL_Trainer(object):
         # HINT: query the policy (using the get_action function) with paths[i]["observation"]
         # and replace paths[i]["action"] with these expert labels
 
-        paths[i]["action"] = expert_policy[paths[i]["observation"]]
+        for path in paths:
+            for t, observation in enumerate(path['observation']):
+                path['action'][t] = expert_policy.get_action(observation)
 
         return paths
 
