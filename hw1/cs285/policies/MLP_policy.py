@@ -79,8 +79,9 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             observation = obs
         else:
             observation = obs[None]
-        return ptu.to_numpy(self(torch.tensor(observation, dtype=torch.float, device=ptu.device)))
+
         # TODO return the action that the policy prescribes
+        return ptu.to_numpy(self(torch.tensor(observation, dtype=torch.float, device=ptu.device)))
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
@@ -108,6 +109,7 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
+        self.optimizer.zero_grad()
         loss = self.loss(
             self(torch.tensor(observations, device=ptu.device, dtype=torch.float)),
             torch.tensor(actions, device=ptu.device, dtype=torch.float)

@@ -3,7 +3,6 @@ import numpy as np
 import time
 
 import gym
-import pybulletgym
 import torch
 
 from cs285.infrastructure import pytorch_util as ptu
@@ -167,15 +166,14 @@ class RL_Trainer(object):
         # TODO collect `batch_size` samples to be used for training
         # HINT1: use sample_trajectories from utils
         # HINT2: you want each of these collected rollouts to be of length self.params['ep_len']
-
         print("\nCollecting data to be used for training...")
         if itr == 0:
             with open(load_initial_expertdata, 'rb') as fp:
                 loaded = pickle.load(fp)
-            paths, envsteps_this_batch = loaded, 0
-        else:
-            paths = utils.sample_n_trajectories(self.env, collect_policy, batch_size // MAX_NVIDEO, MAX_VIDEO_LEN)
-            envsteps_this_batch = sum([p['observation'].shape[0] for p in paths])
+            return loaded, 0, None
+
+        paths, envsteps_this_batch = utils.sample_trajectories(self.env, collect_policy, batch_size, self.params['ep_len'])
+
         # collect more rollouts with the same policy, to be saved as videos in tensorboard
         # note: here, we collect MAX_NVIDEO rollouts, each of length MAX_VIDEO_LEN
         train_video_paths = None
@@ -212,9 +210,7 @@ class RL_Trainer(object):
         # and replace paths[i]["action"] with these expert labels
 
         for path in paths:
-            for t, observation in enumerate(path['observation']):
-                path['action'][t] = expert_policy.get_action(observation)
-
+            path['action'] = expert_policy.get_action(path['observation'])
         return paths
 
     ####################################
